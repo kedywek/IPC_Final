@@ -1,0 +1,18 @@
+# --- Project Specific Generated Files ---
+sportactivity.db
+
+avatars/
+
+# --- NetBeans / Build Artifacts ---
+/nbproject/private/
+/build/
+/dist/
+nbactions.xml
+nb-configuration.xml
+
+# --- Compiled Java Files ---
+*.class
+
+# --- OS Specific Files ---
+.DS_Store
+Thumbs.db
