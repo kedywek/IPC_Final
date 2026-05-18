@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="500.0" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.FXMLDocumentController">
+   <children>
+      <VBox alignment="TOP_CENTER" maxWidth="180.0" prefWidth="220.0" spacing="6.0" style="-fx-background-color: #185FA5; -fx-alignment: center;" HBox.hgrow="NEVER">
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
+         <children>
+            <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
+               <image>
+                  <Image url="@../../../../Downloads/ipc.png" />
+               </image>
+            </ImageView>
+            <Label alignment="CENTER" text="Running la Safor" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+               <font>
+                  <Font name="System Bold" size="21.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" text="Track your outdoor activities " textAlignment="CENTER" textFill="#cceeee" wrapText="true" />
+         </children>
+      </VBox>
+      <VBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="200.0" spacing="6.0" HBox.hgrow="ALWAYS">
+         <HBox.margin>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </HBox.margin>
+         <children>
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Welcome" wrapText="true">
+               <font>
+                  <Font name="System Bold" size="26.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Sign in into your account" textFill="#888888" wrapText="true">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label text="👤 Nickname:" />
+            <TextField fx:id="txtUsername" maxWidth="1.7976931348623157E308" promptText="Enter your username" />
+            <Label text="🔒 Password:" />
+            <PasswordField fx:id="txtPassword" maxWidth="1.7976931348623157E308" promptText="Enter your password" />
+            <Button fx:id="btnSign" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSign" prefHeight="38.0" style="-fx-background-color: #185FA5;" text="Sign in " textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Label fx:id="lblError" alignment="CENTER" textFill="#cc0000" visible="false" />
+            <Separator maxWidth="1.7976931348623157E308" prefWidth="200.0" />
+            <Hyperlink fx:id="linkRegister" alignment="CENTER" maxWidth="1.7976931348623157E308" onAction="#handleRegister" style="-fx-alignment: #E63946;" text="Don't have an account? Register" wrapText="true" VBox.vgrow="ALWAYS" />
+            <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+            <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+         </children>
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
+      </VBox>
+   </children>
+</HBox>
