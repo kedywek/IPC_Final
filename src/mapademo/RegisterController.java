@@ -136,7 +136,7 @@ public class RegisterController implements Initializable {
 
     @FXML
     private void handleCancel(ActionEvent event) {
-        MapaDemoApp.loadView("welcome.fxml");
+        MapaDemoApp.loadView("welcomeView.fxml");
     }
     
 }
