@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="500.0" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.FXMLDocumentController">
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="500.0" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.FXMLDocumentController">
    <children>
       <VBox alignment="CENTER" maxWidth="180.0" prefWidth="220.0" spacing="6.0" styleClass="panel-blue" HBox.hgrow="NEVER">
          <padding>
@@ -21,7 +20,7 @@
          <children>
             <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                <image>
-                  <Image url="@../../../../Downloads/ipc.png" />
+                  <Image url="@../resources/ipc.png" />
                </image>
             </ImageView>
             <Label alignment="CENTER" text="Running la Safor" textAlignment="CENTER" textFill="WHITE" wrapText="true">
