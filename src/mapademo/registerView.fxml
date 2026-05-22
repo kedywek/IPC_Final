@@ -13,16 +13,16 @@
 <?import javafx.scene.text.Font?>
 
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="560.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.FXMLDocumentController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="-Infinity" prefWidth="600.0" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.FXMLDocumentController">
    <children>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0" spacing="8.0" style="-fx-background-color: #185FA5;" HBox.hgrow="NEVER">
+      <VBox alignment="CENTER" maxWidth="220.0" minWidth="220.0" prefHeight="504.0" prefWidth="220.0" spacing="8.0" styleClass="panel-blue" HBox.hgrow="NEVER">
          <HBox.margin>
             <Insets />
          </HBox.margin>
          <children>
             <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../Downloads/ipc.png" />
+                  <Image url="@../resources/ipc.png" />
                </image>
             </ImageView>
             <Label text="Join the club" textFill="WHITE">
@@ -37,7 +37,7 @@
             </Label>
          </children>
       </VBox>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="8.0" HBox.hgrow="ALWAYS">
+      <VBox minWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="8.0" HBox.hgrow="ALWAYS">
          <padding>
             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
          </padding>
@@ -48,38 +48,78 @@
                </font>
             </Label>
             <Label alignment="CENTER" text="Fill in your details to register" textFill="#888888" />
-            <Label text="Nickname">
+            <Label maxWidth="1.7976931348623157E308" text="Nickname">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
             <TextField fx:id="txtNickname" maxWidth="1.7976931348623157E308" promptText="6-15 characters (letters, digits, -, _)" />
-            <Label text="Email">
+            <Label fx:id="lblNIckError" styleClass="label-error" text="Nickname must be 6-15 characters" visible="false">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Label maxWidth="1.7976931348623157E308" text="Email">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
             <TextField fx:id="txtEmail" maxWidth="1.7976931348623157E308" promptText="user@example.com" />
-            <Label text="password">
+            <Label fx:id="lblEmailError" styleClass="label-error" text="Incorrect Email" visible="false">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Label maxWidth="1.7976931348623157E308" text="Password">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
             <PasswordField maxWidth="1.7976931348623157E308" promptText="8-20 characters (upper, lower, digit, symbol)" />
-            <Label text="date of birth">
+            <Label fx:id="lblPasswordError" styleClass="label-error" text="Must include uppercase, lowercase, digit and symbol" visible="false">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Label maxWidth="1.7976931348623157E308" text="Date of birth">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
             <DatePicker fx:id="dpBirth" maxWidth="1.7976931348623157E308" />
-            <Label alignment="CENTER" text="Avatar (optional) :" />
-            <ImageView fx:id="imgAvatar" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
-            <Button fx:id="btnChooseAv" mnemonicParsing="false" onAction="#handleChooseAv" text="choose image" />
-            <Button fx:id="btnCreateAcc" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCreateAcc" prefHeight="38.0" style="-fx-background-color: #185FA5; -fx-background-radius: 6;" text="Create account" textFill="WHITE">
+            <Label fx:id="labelDateError" styleClass="label-error" text="User must be older than 12 years" visible="false">
                <font>
-                  <Font size="14.0" />
+                  <Font size="10.0" />
                </font>
-            </Button>
+            </Label>
+            <Label maxWidth="1.7976931348623157E308" text="Avatar (optional) :" />
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="12.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="imgAvatar" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/user-profile-icon-free-vector.jpg" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="btnChooseAv" mnemonicParsing="false" onAction="#handleChooseAv" prefHeight="30.0" styleClass="btn-small" text="choose image">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Button mnemonicParsing="false" prefHeight="38.0" prefWidth="100.0" styleClass="btn-cancel" text="Cancel" />
+                  <Button fx:id="btnCreateAcc" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCreateAcc" prefHeight="38.0" prefWidth="150.0" styleClass="btn-action" text="Create account" textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+            </HBox>
             <Label fx:id="lblError" alignment="CENTER" textFill="#cc0000" visible="false" />
          </children>
       </VBox>

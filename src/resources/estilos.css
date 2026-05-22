@@ -66,3 +66,127 @@ S17.642,20.762,13.558,20.762z";
 .map-pin .arrow-button .arrow {
     -fx-padding: 0;
 }
+
+}
+ 
+.panel-blue {
+    -fx-background-color: #185FA5;
+}
+ 
+.left-panel {
+    -fx-background-color: #eef3f8;
+    -fx-border-color: transparent #185FA5 transparent transparent;
+    -fx-border-width: 0 2 0 0;
+}
+
+ 
+.right-panel {
+    -fx-background-color: #eef3f8;
+    -fx-border-color: transparent transparent transparent #185FA5;
+    -fx-border-width: 0 0 0 2;
+}
+ 
+.panel-header {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 12 10 12;
+    -fx-background-color: #185FA5;
+    -fx-text-fill: white;
+}
+ 
+.stat-label {
+    -fx-font-size: 12px;
+    -fx-padding: 3 0 3 0;
+}
+.elevation-pane {
+    -fx-background-color: #f5f7fa;
+    -fx-border-color: #dddddd transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+ 
+.btn-action {
+    -fx-background-color: transparent;
+    -fx-text-fill: #185FA5;
+    -fx-font-size: 14px;
+    -fx-border-color: #185FA5;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+}
+ 
+.btn-action:hover {
+    -fx-background-color: #185FA5;
+    -fx-text-fill: white;
+}
+ 
+.btn-cancel {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DC3545;
+    -fx-font-size: 14px;
+    -fx-border-color: #DC3545;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+}
+ 
+.btn-cancel:hover {
+    -fx-background-color: #DC3545;
+    -fx-text-fill: white;
+}
+ 
+.btn-zoom {
+    -fx-background-color: white;
+    -fx-border-color: #bbbbbb;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+ 
+.btn-zoom:hover {
+    -fx-background-color: #e8e8e8;
+}
+ 
+.label-error {
+    -fx-text-fill: #DC3545;
+    -fx-font-size: 10px;
+}
+ 
+.field-error {
+    -fx-background-color: #FCE5E0;
+    -fx-border-color: #DC3545;
+}
+ 
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #185FA5;
+}
+ 
+.table-view .column-header {
+    -fx-background-color: #185FA5;
+}
+ 
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+ 
+.list-view .list-cell:selected {
+    -fx-background-color: #dce9f5;
+    -fx-text-fill: black;
+}
+ .btn-small {
+    -fx-font-size: 11px;
+    -fx-padding: 5 12 5 12;
+    -fx-border-color: #185FA5;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-background-color: transparent;
+    -fx-text-fill: #185FA5;
+    -fx-cursor: hand;
+}
