@@ -41,9 +41,11 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -125,11 +127,9 @@ public class FXMLDocumentController implements Initializable {
     // =========================================================
 
     /** Lista lateral que muestra todos los POIs añadidos al mapa. */
-    @FXML
     private ListView<Poi> map_listview;
 
     /** ScrollPane que envuelve el mapa y permite desplazarlo. */
-    @FXML
     private ScrollPane map_scrollpane;
 
     /**
@@ -137,7 +137,6 @@ public class FXMLDocumentController implements Initializable {
      * Rango: [0.5 – 1.5]. Valor inicial: 1.0 (sin zoom).
      * Cada cambio de valor llama al método zoom().
      */
-    @FXML
     private Slider zoom_slider;
 
     /**
@@ -151,10 +150,29 @@ public class FXMLDocumentController implements Initializable {
     //   · 'pin_info'       (inyectada pero nunca actualizada)
 
     /** Etiqueta en la barra de estado que muestra las coordenadas del ratón. */
-    @FXML
     private Label mousePosition;
     @FXML
-    private SplitPane splitPane;
+    private TextField txtNickname;
+    @FXML
+    private Label lblNIckError;
+    @FXML
+    private TextField txtEmail;
+    @FXML
+    private Label lblEmailError;
+    @FXML
+    private Label lblPasswordError;
+    @FXML
+    private DatePicker dpBirth;
+    @FXML
+    private Label labelDateError;
+    @FXML
+    private ImageView imgAvatar;
+    @FXML
+    private Button btnChooseAv;
+    @FXML
+    private Button btnCreateAcc;
+    @FXML
+    private Label lblError;
  
 
     // =========================================================
@@ -166,7 +184,6 @@ public class FXMLDocumentController implements Initializable {
      *
      * @param event evento de acción del botón
      */
-    @FXML
     void zoomIn(ActionEvent event) {
         double sliderVal = zoom_slider.getValue();
         zoom_slider.setValue(sliderVal + 0.1);
@@ -177,7 +194,6 @@ public class FXMLDocumentController implements Initializable {
      *
      * @param event evento de acción del botón
      */
-    @FXML
     void zoomOut(ActionEvent event) {
         double sliderVal = zoom_slider.getValue();
         zoom_slider.setValue(sliderVal - 0.1);
@@ -235,7 +251,6 @@ public class FXMLDocumentController implements Initializable {
      *
      * @param event evento de ratón sobre el ListView
      */
-    @FXML
     void listClicked(MouseEvent event) {
         // Obtenemos el POI seleccionado; si no hay ninguno, salimos
         Poi itemSelected = map_listview.getSelectionModel().getSelectedItem();
@@ -461,7 +476,6 @@ public class FXMLDocumentController implements Initializable {
      *
      * @param event evento de movimiento del ratón
      */
-    @FXML
     private void showPosition(MouseEvent event) {
         mousePosition.setText(
             "sceneX: " + (int) event.getSceneX() +
@@ -483,7 +497,6 @@ public class FXMLDocumentController implements Initializable {
      *
      * @param event evento de acción del menú
      */
-    @FXML
     private void about(ActionEvent event) {
         Alert mensaje = new Alert(Alert.AlertType.INFORMATION);
 
@@ -581,7 +594,6 @@ public class FXMLDocumentController implements Initializable {
      * @param event evento de acción del menú
      * @throws IOException si hay un problema al obtener la ruta canónica
      */
-    @FXML
     private void cambiarMapa(ActionEvent event) throws IOException {
         FileChooser fc = new FileChooser();
         fc.setInitialDirectory(new File(".")); // Empezamos en el directorio del proyecto
@@ -617,6 +629,14 @@ public class FXMLDocumentController implements Initializable {
         circle.setCenterX(x);
         circle.setCenterY(y);
         mapPane.getChildren().add(circle); // Se añade sobre el mapa como cualquier nodo
+    }
+
+    @FXML
+    private void handleChooseAv(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleCreateAcc(ActionEvent event) {
     }
 
 
