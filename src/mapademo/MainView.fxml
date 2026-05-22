@@ -11,6 +11,8 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -26,7 +28,15 @@
                <items>
                   <ScrollPane fx:id="map_scrollpane" fitToHeight="false" fitToWidth="false" hbarPolicy="ALWAYS" onMouseMoved="#showPosition" pannable="true" vbarPolicy="ALWAYS">
                      <content>
-                        <Pane fx:id="elevationPane" style="-fx-background-color: #f8f8f8;" styleClass="elevation-pane" />
+                        <Pane fx:id="elevationPane" style="-fx-background-color: #f8f8f8;" styleClass="elevation-pane">
+                            <children>
+                                <ImageView pickOnBounds="true">
+                                    <image>
+                                        <Image url="@../resources/upv.jpg" />
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </Pane>
                      </content>
                   </ScrollPane>
                </items>
