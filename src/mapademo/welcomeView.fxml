@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.FXMLDocumentController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.WelcomeController">
    <children>
       <VBox alignment="CENTER" maxWidth="280.0" minWidth="280.0" prefHeight="200.0" prefWidth="280.0" spacing="12.0" style="-fx-background-color: #185FA5;" styleClass="panel-blue" HBox.hgrow="ALWAYS">
          <padding>
@@ -20,7 +19,7 @@
          <children>
             <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../Downloads/ipc.png" />
+                  <Image url="@../resources/ipc.png" />
                </image>
             </ImageView>
             <Label alignment="CENTER" text="Running la Safor" textFill="WHITE" wrapText="true">
