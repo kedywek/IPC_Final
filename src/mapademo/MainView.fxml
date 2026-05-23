@@ -216,7 +216,14 @@
                   <Insets bottom="8.0" left="10.0" right="10.0" top="8.0" />
                </padding>
             </Label>
-            <ListView fx:id="annotationList" prefHeight="277.0" prefWidth="170.0" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="annotationList" prefHeight="277.0" prefWidth="170.0" VBox.vgrow="ALWAYS">
+               <contextMenu>
+                  <ContextMenu>
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#handleDeleteAnnotation" text="Delete Annotation" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu></ListView>
          </children>
       </VBox>
    </right>

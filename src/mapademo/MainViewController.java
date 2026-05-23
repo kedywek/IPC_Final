@@ -28,6 +28,7 @@ import upv.ipc.sportlib.MapRegion;
 import upv.ipc.sportlib.SportActivityApp;
 import upv.ipc.sportlib.TrackPoint;
 import upv.ipc.sportlib.GeoPoint;
+import upv.ipc.sportlib.Annotation;
 
 /**
  * FXML Controller class
@@ -146,7 +147,7 @@ public class MainViewController implements Initializable {
     private void drawRoute(Activity activity) {
         Polyline routeLine = new Polyline();
         routeLine.setStroke(javafx.scene.paint.Color.BLUE); 
-        routeLine.setStrokeWidth(4.0); // Nice and visible thickness
+        routeLine.setStrokeWidth(4.0); 
 
         routeLine.setManaged(false);
         routeLine.setLayoutX(0);
@@ -211,7 +212,7 @@ public class MainViewController implements Initializable {
         lblDistance.setText(String.format("Distance: %.2f km", distanceKm));
 
         long totalSeconds = activity.getDuration().toSeconds();
-        long minutes = totalSeconds / 60;
+        long minutes = totalSeconds / 60;   
         long seconds = totalSeconds % 60;
         lblDuratiom.setText(String.format("Duration: %d:%02d min", minutes, seconds));
 
@@ -261,6 +262,7 @@ public class MainViewController implements Initializable {
 
                 SportActivityApp.getInstance().addAnnotation(currentActivity, newAnnotation); 
                 displayActivityMap(currentActivity);
+                displayActivityAnnotations(currentActivity);
             }
         }
     }
@@ -273,6 +275,7 @@ public class MainViewController implements Initializable {
         if (selectedWrapper == null) return;
 
         SportActivityApp.getInstance().removeActivity(selectedWrapper.getActivity());
+        annotationList.getItems().clear();
         activityList.getItems().remove(selectedWrapper);
 
         elevationPane.getChildren().clear();
@@ -348,6 +351,24 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void showPosition(MouseEvent event) {
+    }
+    @FXML
+    private void handleDeleteAnnotation(ActionEvent event) {
+        AnnotationWrapper selectedWrapper = annotationList.getSelectionModel().getSelectedItem();
+        if (selectedWrapper == null) return;
+
+        Annotation annotationToRemove = selectedWrapper.getAnnotation();
+
+        SportActivityApp.getInstance().removeAnnotation(annotationToRemove);
+
+        annotationList.getItems().remove(selectedWrapper);
+
+        ActivityWrapper trackWrapper = activityList.getSelectionModel().getSelectedItem();
+        if (trackWrapper != null) {
+            displayActivityMap(trackWrapper.getActivity());
+        }
+        
+        System.out.println("Annotation successfully removed from database, sidebar, and map grid canvas.");
     }
     class ActivityWrapper {
         private final Activity activity;
