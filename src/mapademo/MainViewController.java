@@ -266,7 +266,28 @@ public class MainViewController implements Initializable {
     @FXML
     private void handleEditProfile(ActionEvent event) {
     }
+    @FXML
+    private void handleDeleteActivity(ActionEvent event) {
+        ActivityWrapper selectedWrapper = activityList.getSelectionModel().getSelectedItem();
+        if (selectedWrapper == null) return;
 
+        SportActivityApp.getInstance().removeActivity(selectedWrapper.getActivity());
+        activityList.getItems().remove(selectedWrapper);
+
+        elevationPane.getChildren().clear();
+        clearStatsHUD();
+    }
+    
+    private void clearStatsHUD() {
+        lblDistance.setText("Distance: -");
+        lblDuratiom.setText("Duration: -");
+        lblSpeed.setText("Avg-speed: -");
+        lblPace.setText("Avg-pace: -");
+        lblElevUp.setText("Elevation ↑: -");
+        lblElevDown.setText("Elevation ↓: -");
+        lblMinAlt.setText("Min altitude ↓: -");
+        lblMaxAlt.setText("Max altitude ↑: -");
+    }
     @FXML
     private void handleSessionHistory(ActionEvent event) {
     }
