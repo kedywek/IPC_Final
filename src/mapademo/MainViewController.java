@@ -67,9 +67,9 @@ public class MainViewController implements Initializable {
     private Label lblMaxAlt;
     @FXML
     private ListView<?> annotationList;
-
-        
+    @FXML
     private Group zoomGroup;
+
     private Pane mapPane;
     private MapProjection projection;
     /**
@@ -83,43 +83,43 @@ public class MainViewController implements Initializable {
     
     public void displayActivityMap(Activity activity) {
         MapRegion region = activity.getSuggestedMap();
-        if (region == null) {
-            System.err.println("No suitable map region found for this activity.");
-            return;
-        }
+        if (region == null) return;
 
         File imgFile = new File(region.getImagePath());
-        if (!imgFile.exists()) {
-            System.err.println("Map image file missing at: " + region.getImagePath());
-            return;
-        }
+        if (!imgFile.exists()) return;
 
-        Image img = new Image(imgFile.toURI().toString());
+        Image img = new Image(imgFile.toURI().toString(), false);
         double W = img.getWidth();
         double H = img.getHeight();
 
-        mapPane = new Pane();
-        mapPane.setPrefSize(W, H);
-        mapPane.setMinSize(W, H);
-        mapPane.setMaxSize(W, H);
+        elevationPane.getChildren().clear();
+        zoomGroup.setScaleX(1.0);
+        zoomGroup.setScaleY(1.0);
+
+        elevationPane.setPrefSize(W, H);
+        elevationPane.setMinSize(W, H);
+        elevationPane.setMaxSize(W, H);
 
         ImageView iv = new ImageView(img);
         iv.setFitWidth(W);
         iv.setFitHeight(H);
-        mapPane.getChildren().add(iv);
-
-        zoomGroup = new Group();
-        Group contentGroup = new Group();
-        zoomGroup.getChildren().add(mapPane);
-        contentGroup.getChildren().add(zoomGroup);
-
-        map_scrollpane.setContent(contentGroup);
+        elevationPane.getChildren().add(iv);
 
         projection = new MapProjection(region, W, H);
-
         drawRoute(activity);
-    }
+        if (!activity.getTrackPoints().isEmpty()) {
+            TrackPoint firstPoint = activity.getTrackPoints().get(0);
 
+            javafx.geometry.Point2D pixelPoint = projection.project(firstPoint);
+
+            double hValue = pixelPoint.getX() / W;
+            double vValue = pixelPoint.getY() / H;
+
+            map_scrollpane.setHvalue(hValue);
+            map_scrollpane.setVvalue(vValue);
+        }
+    }
+    
     private void drawRoute(Activity activity) {
         Polyline routeLine = new Polyline();
         routeLine.setStroke(javafx.scene.paint.Color.BLUE); 
@@ -134,7 +134,7 @@ public class MainViewController implements Initializable {
             routeLine.getPoints().addAll(pixelPoint.getX(), pixelPoint.getY());
         }
 
-        mapPane.getChildren().add(routeLine);
+        elevationPane.getChildren().add(routeLine);
 
         System.out.println("Route path successfully deployed with point array length: " + routeLine.getPoints().size());
     }
@@ -212,12 +212,28 @@ public class MainViewController implements Initializable {
     private void listClicked(MouseEvent event) {
     }
 
-    @FXML
+@FXML
     private void handleZoomIn(ActionEvent event) {
+        if (zoomGroup != null) {
+            double currentScale = zoomGroup.getScaleX();
+            
+            double newScale = currentScale + 0.1;
+            
+            zoomGroup.setScaleX(newScale);
+            zoomGroup.setScaleY(newScale);
+        }
     }
 
     @FXML
     private void handleZoomOut(ActionEvent event) {
+        if (zoomGroup != null) {
+            double currentScale = zoomGroup.getScaleX();
+            
+            double newScale = currentScale - 0.1;
+
+            zoomGroup.setScaleX(newScale);
+            zoomGroup.setScaleY(newScale);
+        }
     }
 
     @FXML
