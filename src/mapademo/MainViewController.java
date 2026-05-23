@@ -27,6 +27,7 @@ import upv.ipc.sportlib.MapProjection;
 import upv.ipc.sportlib.MapRegion;
 import upv.ipc.sportlib.SportActivityApp;
 import upv.ipc.sportlib.TrackPoint;
+import upv.ipc.sportlib.GeoPoint;
 
 /**
  * FXML Controller class
@@ -78,7 +79,20 @@ public class MainViewController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        try {
+            java.util.List<Activity> savedActivities = SportActivityApp.getInstance().getUserActivities();
+            
+            if (savedActivities != null) {
+                for (Activity activity : savedActivities) {
+                    ActivityWrapper wrapper = new ActivityWrapper(activity);
+                    activityList.getItems().add(wrapper);
+                }
+            }
+            System.out.println("Successfully restored historical activities from database.");
+            
+        } catch (Exception e) {
+            System.out.println("No active user session found to load activities on startup.");
+        } 
     } 
     
     public void displayActivityMap(Activity activity) {
@@ -144,6 +158,22 @@ public class MainViewController implements Initializable {
         }
 
         elevationPane.getChildren().add(routeLine);
+        for (upv.ipc.sportlib.Annotation ann : activity.getAnnotations()) {
+            if (!ann.getGeoPoints().isEmpty()) {
+                upv.ipc.sportlib.GeoPoint gp = ann.getGeoPoints().get(0);
+                Point2D pixelLocation = projection.project(gp);
+
+                javafx.scene.shape.Circle markerDot = new javafx.scene.shape.Circle(pixelLocation.getX(), pixelLocation.getY(), 5.0);
+                markerDot.setFill(javafx.scene.paint.Color.web(ann.getColor()));
+
+                Label markerLabel = new Label(ann.getText());
+                markerLabel.setLayoutX(pixelLocation.getX() + 8);
+                markerLabel.setLayoutY(pixelLocation.getY() - 10);
+                markerLabel.setStyle("-fx-background-color: white; -fx-padding: 2px; -fx-border-color: black; -fx-font-size: 10px;");
+
+                elevationPane.getChildren().addAll(markerDot, markerLabel);
+            }
+        }
 
         System.out.println("Route path successfully deployed with point array length: " + routeLine.getPoints().size());
     }
@@ -203,7 +233,36 @@ public class MainViewController implements Initializable {
         
         System.out.println("User successfully signed out. Session persisted.");
     }
+    @FXML
+    private void handleMapClick(MouseEvent event) {
+        if (event.isSecondaryButtonDown()) { 
+            ActivityWrapper selectedWrapper = activityList.getSelectionModel().getSelectedItem();
+            if (selectedWrapper == null || projection == null) return;
+            
+            Activity currentActivity = selectedWrapper.getActivity();
 
+            javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog("Dangerous Area");
+            dialog.setTitle("New Annotation");
+            dialog.setHeaderText("Create a map marker note");
+            dialog.setContentText("Enter annotation text:");
+
+            java.util.Optional<String> result = dialog.showAndWait();
+            if (result.isPresent() && !result.get().trim().isEmpty()) {
+                GeoPoint geoPoint = projection.unproject(event.getX(), event.getY());
+
+                upv.ipc.sportlib.Annotation newAnnotation = new upv.ipc.sportlib.Annotation(
+                    upv.ipc.sportlib.AnnotationType.POINT,
+                    result.get().trim(),
+                    "#E74C3C",
+                    3.0,
+                    java.util.List.of(geoPoint)
+                ); 
+
+                SportActivityApp.getInstance().addAnnotation(currentActivity, newAnnotation); 
+                displayActivityMap(currentActivity);
+            }
+        }
+    }
     @FXML
     private void handleEditProfile(ActionEvent event) {
     }
