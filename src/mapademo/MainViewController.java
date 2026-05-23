@@ -67,7 +67,7 @@ public class MainViewController implements Initializable {
     @FXML
     private Label lblMaxAlt;
     @FXML
-    private ListView<?> annotationList;
+    private ListView<AnnotationWrapper> annotationList;
     @FXML
     private Group zoomGroup;
 
@@ -198,6 +198,7 @@ public class MainViewController implements Initializable {
                 
                 displayActivityMap(importedRun);
                 displayActivityStats(importedRun);
+                displayActivityAnnotations(importedRun);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -317,6 +318,7 @@ public class MainViewController implements Initializable {
 
             displayActivityMap(selectedActivity);
             displayActivityStats(selectedActivity);
+            displayActivityAnnotations(selectedActivity);
         }
     }
 
@@ -364,6 +366,29 @@ public class MainViewController implements Initializable {
                 java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
             );
             return name + " - " + date;
+        }
+    }
+    private void displayActivityAnnotations(Activity activity) {
+        annotationList.getItems().clear();
+        
+        for (upv.ipc.sportlib.Annotation ann : activity.getAnnotations()) {
+            annotationList.getItems().add(new AnnotationWrapper(ann));
+        }
+    }
+    class AnnotationWrapper {
+        private final upv.ipc.sportlib.Annotation annotation;
+
+        public AnnotationWrapper(upv.ipc.sportlib.Annotation annotation) {
+            this.annotation = annotation;
+        }
+
+        public upv.ipc.sportlib.Annotation getAnnotation() {
+            return annotation;
+        }
+
+        @Override
+        public String toString() {
+            return annotation.getText();
         }
     }
 }
