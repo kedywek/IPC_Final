@@ -153,13 +153,33 @@ public class MainViewController implements Initializable {
                 Activity importedRun = SportActivityApp.getInstance().importActivity(file);
 
                 displayActivityMap(importedRun);
+                displayActivityStats(importedRun);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+    private void displayActivityStats(Activity activity) {
 
+        double distanceKm = activity.getTotalDistance() / 1000.0;
+        lblDistance.setText(String.format("Distance: %.2f km", distanceKm));
+
+        long totalSeconds = activity.getDuration().toSeconds();
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        lblDuratiom.setText(String.format("Duration: %d:%02d min", minutes, seconds));
+
+        lblSpeed.setText(String.format("Avg-speed: %.1f km/h", activity.getAverageSpeed()));
+        lblPace.setText(String.format("Avg-pace: %.2f min/km", activity.getAveragePace()));
+
+        lblElevUp.setText(String.format("Elevation ↑: %.0fm", activity.getElevationGain()));
+        lblElevDown.setText(String.format("Elevation ↓: %.0fm", activity.getElevationLoss()));
+
+        lblMinAlt.setText(String.format("Min altitude ↓: %.0fm", activity.getMinElevation()));
+        lblMaxAlt.setText(String.format("Max altitude ↑: %.0fm", activity.getMaxElevation()));
+    }
+    
     @FXML
     private void handleSignOut(ActionEvent event) {
     }
