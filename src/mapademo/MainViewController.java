@@ -36,7 +36,7 @@ import upv.ipc.sportlib.TrackPoint;
 public class MainViewController implements Initializable {
 
     @FXML
-    private ListView<?> activityList;
+    private ListView<ActivityWrapper> activityList;
     @FXML
     private Label mousePosition;
     @FXML
@@ -108,15 +108,24 @@ public class MainViewController implements Initializable {
         projection = new MapProjection(region, W, H);
         drawRoute(activity);
         if (!activity.getTrackPoints().isEmpty()) {
-            TrackPoint firstPoint = activity.getTrackPoints().get(0);
+            double minX = Double.MAX_VALUE;
+            double maxX = -Double.MAX_VALUE;
+            double minY = Double.MAX_VALUE;
+            double maxY = -Double.MAX_VALUE;
 
-            javafx.geometry.Point2D pixelPoint = projection.project(firstPoint);
+            for (TrackPoint tp : activity.getTrackPoints()) {
+                javafx.geometry.Point2D p = projection.project(tp);
+                if (p.getX() < minX) minX = p.getX();
+                if (p.getX() > maxX) maxX = p.getX();
+                if (p.getY() < minY) minY = p.getY();
+                if (p.getY() > maxY) maxY = p.getY();
+            }
 
-            double hValue = pixelPoint.getX() / W;
-            double vValue = pixelPoint.getY() / H;
+            double midX = (minX + maxX) / 2.0;
+            double midY = (minY + maxY) / 2.0;
 
-            map_scrollpane.setHvalue(hValue);
-            map_scrollpane.setVvalue(vValue);
+            map_scrollpane.setHvalue(midX / W);
+            map_scrollpane.setVvalue(midY / H);
         }
     }
     
@@ -146,12 +155,17 @@ public class MainViewController implements Initializable {
         fc.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("GPX Files", "*.gpx"));
 
         javafx.stage.Stage stage = (javafx.stage.Stage) map_scrollpane.getScene().getWindow();
-
         java.io.File file = fc.showOpenDialog(stage);
+        
         if (file != null) {
             try {
                 Activity importedRun = SportActivityApp.getInstance().importActivity(file);
-
+                
+                ActivityWrapper wrapper = new ActivityWrapper(importedRun);
+                activityList.getItems().add(wrapper);
+                
+                activityList.getSelectionModel().select(wrapper);
+                
                 displayActivityMap(importedRun);
                 displayActivityStats(importedRun);
 
@@ -209,10 +223,18 @@ public class MainViewController implements Initializable {
     }
 
     @FXML
-    private void listClicked(MouseEvent event) {
+    private void listClicked(javafx.scene.input.MouseEvent event) {
+        ActivityWrapper selectedWrapper = activityList.getSelectionModel().getSelectedItem();
+
+        if (selectedWrapper != null) {
+            Activity selectedActivity = selectedWrapper.getActivity();
+
+            displayActivityMap(selectedActivity);
+            displayActivityStats(selectedActivity);
+        }
     }
 
-@FXML
+    @FXML
     private void handleZoomIn(ActionEvent event) {
         if (zoomGroup != null) {
             double currentScale = zoomGroup.getScaleX();
@@ -239,5 +261,23 @@ public class MainViewController implements Initializable {
     @FXML
     private void showPosition(MouseEvent event) {
     }
-    
+    class ActivityWrapper {
+        private final Activity activity;
+
+        public ActivityWrapper(Activity activity) {
+            this.activity = activity;
+        }
+
+        public Activity getActivity() {
+            return activity;
+        }
+
+        public String toString() {
+            String name = activity.getName();
+            String date = activity.getStartTime().format(
+                java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            );
+            return name + " - " + date;
+        }
+    }
 }
