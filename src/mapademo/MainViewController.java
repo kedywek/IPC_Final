@@ -196,6 +196,12 @@ public class MainViewController implements Initializable {
     
     @FXML
     private void handleSignOut(ActionEvent event) {
+        SportActivityApp.getInstance().logout(); 
+        
+        javafx.stage.Stage stage = (javafx.stage.Stage) map_scrollpane.getScene().getWindow();
+        stage.close();
+        
+        System.out.println("User successfully signed out. Session persisted.");
     }
 
     @FXML
