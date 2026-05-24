@@ -286,6 +286,7 @@ public class MainViewController implements Initializable {
     }
     @FXML
     private void handleEditProfile(ActionEvent event) {
+        MapaDemoApp.loadView("EditView.fxml");
     }
     @FXML
     private void handleDeleteActivity(ActionEvent event) {
