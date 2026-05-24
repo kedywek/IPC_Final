@@ -91,7 +91,11 @@
                   <Font size="10.0" />
                </font>
             </Label>
-            <Label fx:id="lblAvatar" maxWidth="1.7976931348623157E308" text="Avatar (optional) : " />
+            <Label maxWidth="1.7976931348623157E308" text="Profile (optional) :">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="12.0" VBox.vgrow="ALWAYS">
                <children>
                   <ImageView fx:id="imgAvatar" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
