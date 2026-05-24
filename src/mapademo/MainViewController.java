@@ -12,6 +12,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -71,8 +74,15 @@ public class MainViewController implements Initializable {
     private ListView<AnnotationWrapper> annotationList;
     @FXML
     private Group zoomGroup;
-
-    private Pane mapPane;
+    @FXML
+    private AreaChart<Number, Number> elevationChart;
+    @FXML
+    private NumberAxis xAxis;
+    @FXML
+    private NumberAxis yAxis;
+    
+    
+    private boolean showingChart = false;
     private MapProjection projection;
     /**
      * Initializes the controller class.
@@ -97,6 +107,14 @@ public class MainViewController implements Initializable {
     } 
     
     public void displayActivityMap(Activity activity) {
+        if (elevationChart != null) {
+            elevationChart.setVisible(false);
+            elevationChart.setManaged(false);
+            if (splitPane != null) {
+                splitPane.setDividerPositions(1.0);
+            }
+            showingChart = false;
+        }
         MapRegion region = activity.getSuggestedMap();
         if (region == null) return;
 
@@ -306,10 +324,104 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void handleElevation(ActionEvent event) {
+        ActivityWrapper selectedWrapper = activityList.getSelectionModel().getSelectedItem();
+        if (selectedWrapper == null) return;
+
+        Activity activity = selectedWrapper.getActivity();
+
+        if (showingChart && "Elevation Profile".equals(elevationChart.getTitle())) {
+            elevationChart.setVisible(false);
+            elevationChart.setManaged(false); 
+            
+            splitPane.setDividerPositions(1.0);
+            showingChart = false;
+        } else {
+            elevationChart.setTitle("Elevation Profile");
+            xAxis.setLabel("Distance (km)");
+            yAxis.setLabel("Altitude (m)");
+
+            elevationChart.getData().clear();
+            elevationChart.setAnimated(false);
+            xAxis.setAnimated(false);
+            yAxis.setAnimated(false);
+
+            javafx.scene.chart.XYChart.Series<Number, Number> series = new javafx.scene.chart.XYChart.Series<>();
+            double accumulatedDistanceMeters = 0;
+            TrackPoint lastPoint = null;
+
+            for (TrackPoint tp : activity.getTrackPoints()) { 
+                if (lastPoint != null) {
+                    accumulatedDistanceMeters += tp.distanceTo(lastPoint); 
+                }
+                double distanceKm = accumulatedDistanceMeters / 1000.0;
+                double altitudeMeters = tp.getElevation();
+
+                series.getData().add(new javafx.scene.chart.XYChart.Data<>(distanceKm, altitudeMeters));
+                lastPoint = tp;
+            }
+
+            elevationChart.getData().add(series);
+            
+            elevationChart.setManaged(true);
+            elevationChart.setVisible(true);
+            
+            splitPane.setDividerPositions(0.65);
+            showingChart = true;
+        }
     }
 
     @FXML
     private void handleSpeed(ActionEvent event) {
+        ActivityWrapper selectedWrapper = activityList.getSelectionModel().getSelectedItem();
+        if (selectedWrapper == null) {
+            System.out.println("Cannot display chart: No activity selected.");
+            return;
+        }
+
+        Activity activity = selectedWrapper.getActivity();
+
+        if (showingChart && "Speed Profile".equals(elevationChart.getTitle())) {
+            elevationChart.setVisible(false);
+            elevationChart.setManaged(false);
+            
+            splitPane.setDividerPositions(1.0); // Powrót do pełnej mapy
+            showingChart = false;
+        } else {
+            elevationChart.setTitle("Speed Profile");
+            xAxis.setLabel("Distance (km)");
+            yAxis.setLabel("Speed (km/h)");
+
+            elevationChart.getData().clear();
+            elevationChart.setAnimated(false);
+            xAxis.setAnimated(false);
+            yAxis.setAnimated(false);
+
+            javafx.scene.chart.XYChart.Series<Number, Number> series = new javafx.scene.chart.XYChart.Series<>();
+
+            double accumulatedDistanceMeters = 0;
+            java.util.List<TrackPoint> points = activity.getTrackPoints();
+
+            for (int i = 0; i < points.size() - 1; i++) {
+                TrackPoint current = points.get(i);
+                TrackPoint next = points.get(i + 1);
+
+                double segmentSpeed = current.speedTo(next);
+                accumulatedDistanceMeters += current.distanceTo(next);
+
+                double distanceKm = accumulatedDistanceMeters / 1000.0;
+
+                series.getData().add(new javafx.scene.chart.XYChart.Data<>(distanceKm, segmentSpeed));
+            }
+
+            elevationChart.getData().add(series);
+            
+            elevationChart.setManaged(true);
+            elevationChart.setVisible(true);
+            
+            splitPane.setDividerPositions(0.65);
+            showingChart = true;
+            System.out.println("Speed profile chart successfully rendered.");
+        }
     }
 
     @FXML
@@ -370,6 +482,7 @@ public class MainViewController implements Initializable {
         
         System.out.println("Annotation successfully removed from database, sidebar, and map grid canvas.");
     }
+    
     class ActivityWrapper {
         private final Activity activity;
 
