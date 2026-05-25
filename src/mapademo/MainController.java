@@ -446,7 +446,6 @@ public class MainController implements Initializable {
     private void handleZoomIn(ActionEvent event) {
         if (zoomGroup != null) {
             double currentScale = zoomGroup.getScaleX();
-            
             double newScale = currentScale + 0.1;
             
             zoomGroup.setScaleX(newScale);
@@ -458,11 +457,12 @@ public class MainController implements Initializable {
     private void handleZoomOut(ActionEvent event) {
         if (zoomGroup != null) {
             double currentScale = zoomGroup.getScaleX();
-            
             double newScale = currentScale - 0.1;
 
-            zoomGroup.setScaleX(newScale);
-            zoomGroup.setScaleY(newScale);
+            if (newScale >= 0.2) {
+                zoomGroup.setScaleX(newScale);
+                zoomGroup.setScaleY(newScale);
+            }
         }
     }
 
@@ -472,7 +472,7 @@ public class MainController implements Initializable {
             GeoPoint gp = projection.unproject(event.getX(), event.getY());
             mousePosition.setText(String.format("GPS: Lat: %.5f, Lon: %.5f", gp.getLatitude(), gp.getLongitude()));
         } else if (mousePosition != null) {
-            mousePosition.setText("Współrzędne: -");
+            mousePosition.setText("");
         }
     }
     
