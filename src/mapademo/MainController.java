@@ -319,6 +319,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleAddMap(ActionEvent event) {
+        MapaDemoApp.loadView("AddMappView.fxml"); 
     }
 
     @FXML
