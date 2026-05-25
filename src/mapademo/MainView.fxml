@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -16,42 +20,63 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.FXMLDocumentController">
+<BorderPane stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.MainController">
    <center>
-      <VBox prefHeight="556.0" prefWidth="853.0" stylesheets="@../resources/estilos.css">
+      <StackPane prefHeight="556.0" prefWidth="853.0" BorderPane.alignment="CENTER">
          <children>
-            <SplitPane fx:id="splitPane" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+            <SplitPane fx:id="splitPane" dividerPositions="1.0" orientation="VERTICAL" StackPane.alignment="CENTER">
                <items>
-                  <ScrollPane fx:id="map_scrollpane" hbarPolicy="ALWAYS" onMouseMoved="#showPosition" pannable="true" prefHeight="398.0" prefWidth="358.0" vbarPolicy="ALWAYS">
+                  <ScrollPane fx:id="map_scrollpane" fitToHeight="false" fitToWidth="false" hbarPolicy="ALWAYS" onMouseMoved="#showPosition" pannable="true" vbarPolicy="ALWAYS">
                      <content>
-                        <Pane fx:id="elevationPane" minHeight="60.0" prefHeight="100.0" style="-fx-background-color: #f8f8f8;" styleClass="elevation-pane">
+                        <Group fx:id="zoomGroup">
                            <children>
-                              <ImageView pickOnBounds="true">
-                                 <image>
-                                    <Image url="@../resources/upv.jpg" />
-                                 </image>
-                              </ImageView>
-                              <Button fx:id="btnZoomIn" layoutX="10.0" layoutY="10.0" maxWidth="28.0" mnemonicParsing="false" onAction="#handleZoomIn" prefHeight="28.0" styleClass="btn-zoom" text="+">
-                                 <font>
-                                    <Font name="System Bold" size="14.0" />
-                                 </font>
-                              </Button>
-                              <Button fx:id="btnZoomOut" layoutX="10.0" layoutY="42.0" mnemonicParsing="false" onAction="#handleZoomOut" prefHeight="28.0" prefWidth="28.0" styleClass="btn-zoom" text="-">
-                                 <font>
-                                    <Font name="System Bold" size="14.0" />
-                                 </font>
-                              </Button>
+                              <Pane fx:id="elevationPane" onMousePressed="#handleMapClick" style="-fx-background-color: #f8f8f8;" styleClass="elevation-pane">
+                                 <children>
+                                    <ImageView pickOnBounds="true">
+                                       <image>
+                                          <Image url="@../resources/upv.jpg" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
                            </children>
-                        </Pane>
+                        </Group>
                      </content>
                   </ScrollPane>
+                  <AreaChart fx:id="elevationChart" legendVisible="false" minHeight="0.0" visible="false">
+                    <xAxis>
+                        <NumberAxis side="BOTTOM" fx:id="xAxis" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis fx:id="yAxis" side="LEFT" />
+                     </yAxis>
+                  </AreaChart>
                </items>
             </SplitPane>
+            
+            <VBox fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" spacing="6.0" StackPane.alignment="TOP_LEFT">
+               <StackPane.margin>
+                  <Insets left="20.0" top="20.0" />
+               </StackPane.margin>
+               <children>
+                  <Button fx:id="btnZoomIn" maxWidth="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#handleZoomIn" prefHeight="32.0" styleClass="btn-zoom" text="+">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnZoomOut" maxWidth="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#handleZoomOut" prefHeight="32.0" styleClass="btn-zoom" text="-">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </VBox>
          </children>
-      </VBox>
+      </StackPane>
    </center>
    <top>
       <HBox alignment="CENTER_RIGHT" fillHeight="false" spacing="5.0" BorderPane.alignment="CENTER">
@@ -99,7 +124,7 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="mousePosition" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" text="SceneX:     ScenY:     " wrapText="true" HBox.hgrow="NEVER">
+            <Label fx:id="mousePosition" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" text="SceneX:      ScenY:      " wrapText="true" HBox.hgrow="NEVER">
                <padding>
                   <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
                </padding>
@@ -123,7 +148,14 @@
                   <Insets bottom="8.0" left="10.0" right="10.0" top="8.0" />
                </padding>
             </Label>
-            <ListView fx:id="activityList" minHeight="200.0" onMouseClicked="#listClicked" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="activityList" minHeight="200.0" onMouseClicked="#listClicked" VBox.vgrow="ALWAYS">
+               <contextMenu>
+                  <ContextMenu>
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#handleDeleteActivity" text="Delete Activity" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu></ListView>
          </children>
       </VBox>
    </left>
@@ -194,7 +226,14 @@
                   <Insets bottom="8.0" left="10.0" right="10.0" top="8.0" />
                </padding>
             </Label>
-            <ListView fx:id="annotationList" prefHeight="277.0" prefWidth="170.0" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="annotationList" prefHeight="277.0" prefWidth="170.0" VBox.vgrow="ALWAYS">
+               <contextMenu>
+                  <ContextMenu>
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#handleDeleteAnnotation" text="Delete Annotation" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu></ListView>
          </children>
       </VBox>
    </right>

@@ -5,14 +5,10 @@
  */
 package mapademo;
 
-import java.io.IOException;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import upv.ipc.sportlib.SportActivityApp;
 
 /**
  *
@@ -20,37 +16,44 @@ import javafx.stage.Stage;
  */
 public class MapaDemoApp extends Application {
     
-    private static BorderPane rootLayout;
+    private static Stage primaryStage;
     
     @Override
     public void start(Stage stage) throws Exception {
-        rootLayout = new BorderPane();
+        primaryStage = stage;
         
-        Scene scene = new Scene(rootLayout, 900, 600);
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/resources/logo.png")));
         stage.setTitle("Running la Safor - IPC 2026");
-        stage.setScene(scene);
-        stage.show();
+        
+        stage.setOnCloseRequest(event -> {
+            System.out.println("Application closing via window 'X' button...");
+            SportActivityApp.getInstance().logout(); 
+            System.out.println("Session successfully closed and saved before exit.");
+        });
+
         loadView("welcomeView.fxml");
     }
 
-
     public static void loadView(String fxmlFile) {
         try {
-            FXMLLoader loader = new FXMLLoader(MapaDemoApp.class.getResource(fxmlFile));
-            Parent view = loader.load();
-            rootLayout.setCenter(view);
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(MapaDemoApp.class.getResource(fxmlFile));
+            javafx.scene.Parent root = loader.load();
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
             
-        } catch (IOException e) {
+            primaryStage.setScene(scene);
+            
+            primaryStage.sizeToScene();
+            
+            primaryStage.centerOnScreen();
+            
+            primaryStage.show();
+        } catch (Exception e) {
             System.err.println("Error loading view: " + fxmlFile);
             e.printStackTrace();
         }
     }
-     /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String[] args) {
         launch(args);
     }
-    
 }
