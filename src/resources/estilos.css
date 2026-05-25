@@ -67,7 +67,7 @@ S17.642,20.762,13.558,20.762z";
     -fx-padding: 0;
 }
 
-}
+
  
 .panel-blue {
     -fx-background-color: #185FA5;
@@ -115,11 +115,7 @@ S17.642,20.762,13.558,20.762z";
     -fx-cursor: hand;
 }
  
-.btn-action:hover {
-    -fx-background-color: #185FA5;
-    -fx-text-fill: white;
-}
- 
+
 .btn-cancel {
     -fx-background-color: transparent;
     -fx-text-fill: #DC3545;
@@ -131,11 +127,7 @@ S17.642,20.762,13.558,20.762z";
     -fx-cursor: hand;
 }
  
-.btn-cancel:hover {
-    -fx-background-color: #DC3545;
-    -fx-text-fill: white;
-}
- 
+
 .btn-zoom {
     -fx-background-color: white;
     -fx-border-color: #bbbbbb;
@@ -147,9 +139,7 @@ S17.642,20.762,13.558,20.762z";
     -fx-cursor: hand;
 }
  
-.btn-zoom:hover {
-    -fx-background-color: #e8e8e8;
-}
+
  
 .label-error {
     -fx-text-fill: #DC3545;

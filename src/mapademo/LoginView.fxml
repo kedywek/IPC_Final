@@ -29,7 +29,7 @@
                   <Font name="System Bold" size="21.0" />
                </font>
             </Label>
-            <Label alignment="CENTER" text="Track your outdoor activities " textAlignment="CENTER" textFill="#cceeee" wrapText="true" />
+            <Label alignment="CENTER" text="Track your outdoor activities " textAlignment="CENTER" textFill="WHITE" wrapText="true" />
          </children>
       </VBox>
       <VBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="200.0" spacing="6.0" HBox.hgrow="ALWAYS">
@@ -61,16 +61,20 @@
                   <Font size="10.0" />
                </font>
             </Label>
-            <Button fx:id="btnSign" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSign" prefHeight="38.0" styleClass="btn-action" text="Sign in " textFill="WHITE">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Button>
-            <Button fx:id="btnSign1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSign" prefHeight="38.0" styleClass="btn-cancel" text="Cancel" textFill="WHITE">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Button>
+            <HBox spacing="15.0">
+               <children>
+                  <Button fx:id="btnSign" mnemonicParsing="false" onAction="#handleSign" prefHeight="38.0" prefWidth="80.0" styleClass="btn-cancel" text="Cancel" textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnSign1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSign" prefHeight="38.0" prefWidth="120.0" styleClass="btn-action" text="Sign in " textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
          </children>
          <padding>
             <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
