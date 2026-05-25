@@ -13,7 +13,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,6 +31,7 @@ import upv.ipc.sportlib.SportActivityApp;
 import upv.ipc.sportlib.TrackPoint;
 import upv.ipc.sportlib.GeoPoint;
 import upv.ipc.sportlib.Annotation;
+import upv.ipc.sportlib.AnnotationType;
 
 /**
  * FXML Controller class
@@ -177,9 +177,9 @@ public class MainController implements Initializable {
         }
 
         elevationPane.getChildren().add(routeLine);
-        for (upv.ipc.sportlib.Annotation ann : activity.getAnnotations()) {
+        for (Annotation ann : activity.getAnnotations()) {
             if (!ann.getGeoPoints().isEmpty()) {
-                upv.ipc.sportlib.GeoPoint gp = ann.getGeoPoints().get(0);
+                GeoPoint gp = ann.getGeoPoints().get(0);
                 Point2D pixelLocation = projection.project(gp);
 
                 javafx.scene.shape.Circle markerDot = new javafx.scene.shape.Circle(pixelLocation.getX(), pixelLocation.getY(), 5.0);
@@ -270,8 +270,8 @@ public class MainController implements Initializable {
             if (result.isPresent() && !result.get().trim().isEmpty()) {
                 GeoPoint geoPoint = projection.unproject(event.getX(), event.getY());
 
-                upv.ipc.sportlib.Annotation newAnnotation = new upv.ipc.sportlib.Annotation(
-                    upv.ipc.sportlib.AnnotationType.POINT,
+                Annotation newAnnotation = new Annotation(
+                    AnnotationType.POINT,
                     result.get().trim(),
                     "#E74C3C",
                     3.0,
@@ -466,7 +466,14 @@ public class MainController implements Initializable {
 
     @FXML
     private void showPosition(MouseEvent event) {
+        if (projection != null && mousePosition != null) {
+            GeoPoint gp = projection.unproject(event.getX(), event.getY());
+            mousePosition.setText(String.format("GPS: Lat: %.5f, Lon: %.5f", gp.getLatitude(), gp.getLongitude()));
+        } else if (mousePosition != null) {
+            mousePosition.setText("Współrzędne: -");
+        }
     }
+    
     @FXML
     private void handleDeleteAnnotation(ActionEvent event) {
         AnnotationWrapper selectedWrapper = annotationList.getSelectionModel().getSelectedItem();
@@ -508,18 +515,18 @@ public class MainController implements Initializable {
     private void displayActivityAnnotations(Activity activity) {
         annotationList.getItems().clear();
         
-        for (upv.ipc.sportlib.Annotation ann : activity.getAnnotations()) {
+        for (Annotation ann : activity.getAnnotations()) {
             annotationList.getItems().add(new AnnotationWrapper(ann));
         }
     }
     class AnnotationWrapper {
-        private final upv.ipc.sportlib.Annotation annotation;
+        private final Annotation annotation;
 
-        public AnnotationWrapper(upv.ipc.sportlib.Annotation annotation) {
+        public AnnotationWrapper(Annotation annotation) {
             this.annotation = annotation;
         }
 
-        public upv.ipc.sportlib.Annotation getAnnotation() {
+        public Annotation getAnnotation() {
             return annotation;
         }
 
