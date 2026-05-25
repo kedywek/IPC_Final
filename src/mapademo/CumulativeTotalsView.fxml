@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="350.0" spacing="10.0" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.FXMLDocumentController">
+   <children>
+      <Label text="Monthly Totals">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <Label text="Activity summary for the current month" />
+      <Label fx:id="lblTotalTime" text="Total time:">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Label>
+      <Separator prefWidth="200.0" />
+      <Label fx:id="lblotalDistance" text="Total distance:">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Label>
+      <Separator prefWidth="200.0" />
+      <Label fx:id="lblTotalAscent" text="Total ascent:">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Label>
+      <Separator prefWidth="200.0" />
+      <Label fx:id="lblTotaldescent" layoutX="34.0" layoutY="158.0" text="Total descent:">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Label>
+      <Separator prefWidth="200.0" />
+      <HBox alignment="CENTER" prefHeight="100.0" VBox.vgrow="ALWAYS">
+         <children>
+            <Button maxWidth="100.0" mnemonicParsing="false" onAction="#handleCls" prefHeight="35.0" styleClass="btn-cancel" text="Cancel" />
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+   </padding>
+</VBox>
