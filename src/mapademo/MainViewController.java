@@ -311,8 +311,8 @@ public class MainViewController implements Initializable {
         lblMinAlt.setText("Min altitude ↓: -");
         lblMaxAlt.setText("Max altitude ↑: -");
     }
-    @FXML
     private void handleSessionHistory(ActionEvent event) {
+        MapaDemoApp.loadView("SessionHistory.fxml"); // Or whatever your FXML file is named!
     }
 
     @FXML
