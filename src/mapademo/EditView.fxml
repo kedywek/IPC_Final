@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="400.0" spacing="6.0" styleClass="label-error" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.EditController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="400.0" spacing="6.0" styleClass="label-error" stylesheets="@../resources/estilos.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.EditController">
    <padding>
-      <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+      <Insets bottom="30.0" left="24.0" right="24.0" top="20.0" />
    </padding>
    <children>
       <Label text="Edit Profile ">
@@ -78,6 +78,12 @@
             <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#handleCancel" prefHeight="38.0" prefWidth="100.0" styleClass="btn-cancel" text="Cancel" />
             <Button fx:id="btnSave" layoutX="116.0" layoutY="22.0" mnemonicParsing="false" onAction="#handleSave" prefHeight="38.0" prefWidth="140.0" styleClass="btn-action" text="Save" />
          </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
       </HBox>
    </children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
 </VBox>
