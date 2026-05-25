@@ -319,10 +319,12 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleAddMap(ActionEvent event) {
+        MapaDemoApp.loadView("AddMappView.fxml"); 
     }
 
     @FXML
     private void handleTotals(ActionEvent event) {
+        MapaDemoApp.loadView("CumulativeTotalsView.fxml"); 
     }
 
     @FXML
