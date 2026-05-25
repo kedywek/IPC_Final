@@ -38,7 +38,7 @@ import upv.ipc.sportlib.Annotation;
  *
  * @author damian
  */
-public class MainViewController implements Initializable {
+public class MainController implements Initializable {
 
     @FXML
     private ListView<ActivityWrapper> activityList;
@@ -115,7 +115,7 @@ public class MainViewController implements Initializable {
             }
             showingChart = false;
         }
-        MapRegion region = activity.getSuggestedMap();
+        MapRegion region = SportActivityApp.getInstance().findMapForActivity(activity);
         if (region == null) return;
 
         File imgFile = new File(region.getImagePath());
@@ -311,8 +311,10 @@ public class MainViewController implements Initializable {
         lblMinAlt.setText("Min altitude ↓: -");
         lblMaxAlt.setText("Max altitude ↑: -");
     }
+    
+    @FXML
     private void handleSessionHistory(ActionEvent event) {
-        MapaDemoApp.loadView("SessionHistory.fxml"); // Or whatever your FXML file is named!
+        MapaDemoApp.loadView("SessionHistoryView.fxml"); 
     }
 
     @FXML
