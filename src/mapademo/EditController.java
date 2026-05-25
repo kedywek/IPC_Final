@@ -6,6 +6,7 @@ package mapademo;
 
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -48,6 +49,10 @@ public class EditController implements Initializable {
     private Button btnCancel;
     @FXML
     private Button btnSave;
+    @FXML
+    private Label lblDateError;
+    @FXML
+    private Label lblProfile;
     
     
     private String selectedAvatarPath = null;
@@ -85,6 +90,8 @@ public class EditController implements Initializable {
         if (imgFile != null) {
             selectedAvatarPath = imgFile.getAbsolutePath();
             Image newAvatarImage = new Image(imgFile.toURI().toString());
+            String lblText = lblProfile.getText();
+            lblProfile.setText(lblText + imgFile.getName()); 
             imgAvatar.setImage(newAvatarImage);    
         }
     }
@@ -96,6 +103,51 @@ public class EditController implements Initializable {
 
     @FXML
     private void handleSave(ActionEvent event) {
+        User currentUser = SportActivityApp.getInstance().getCurrentUser();
+        if (currentUser == null) return;
+
+        String email = lblEmailError.getText().trim();
+        String password = txtPassword.getText();
+        LocalDate birthDate = dpBirt.getValue();
+
+        lblPassError.setVisible(false);
+        lblDateError.setVisible(false);
+        boolean isValid = true;
+
+        if (!User.checkEmail(email)) {
+            System.out.println("Invalid email format entered.");
+            isValid = false;
+        }
+
+        if (password.isEmpty()) {
+            password = currentUser.getPassword();
+        } else if (!User.checkPassword(password)) {
+            lblPassError.setVisible(true); 
+            isValid = false;
+        }
+
+        if (birthDate == null || !User.isOlderThan(birthDate, 12)) {
+            lblDateError.setVisible(true);
+            isValid = false;
+        }
+
+        if (isValid) {
+            try {
+                SportActivityApp.getInstance().updateCurrentUser(
+                    email, 
+                    password, 
+                    birthDate, 
+                    selectedAvatarPath
+                );
+
+                System.out.println("User account credentials successfully committed to SQL database.");
+                
+                MapaDemoApp.loadView("MainView.fxml");
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

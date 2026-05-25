@@ -53,8 +53,8 @@
          </font>
       </Label>
       <DatePicker fx:id="dpBirt" maxWidth="9999.0" />
-      <Label styleClass="label-error" text="User must be older then 12 " visible="false" />
-      <Label layoutX="34.0" layoutY="160.0" text="Profile:">
+      <Label fx:id="lblDateError" styleClass="label-error" text="User must be older then 12 " visible="false" />
+      <Label fx:id="lblProfile" layoutX="34.0" layoutY="160.0" text="Profile:">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
