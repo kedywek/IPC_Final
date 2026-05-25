@@ -330,8 +330,14 @@ public class MainController implements Initializable {
     @FXML
     private void handleElevation(ActionEvent event) {
         ActivityWrapper selectedWrapper = activityList.getSelectionModel().getSelectedItem();
-        if (selectedWrapper == null) return;
-
+        if (selectedWrapper == null) {
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+            alert.setTitle("No Activity Selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select an activity from the list to view its elevation profile.");
+            alert.showAndWait();
+            return;
+        }
         Activity activity = selectedWrapper.getActivity();
 
         if (showingChart && "Elevation Profile".equals(elevationChart.getTitle())) {
@@ -379,10 +385,14 @@ public class MainController implements Initializable {
     private void handleSpeed(ActionEvent event) {
         ActivityWrapper selectedWrapper = activityList.getSelectionModel().getSelectedItem();
         if (selectedWrapper == null) {
-            System.out.println("Cannot display chart: No activity selected.");
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+            alert.setTitle("No Activity Selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select an activity from the list to view its speed profile.");
+            alert.showAndWait();
             return;
         }
-
+        
         Activity activity = selectedWrapper.getActivity();
 
         if (showingChart && "Speed Profile".equals(elevationChart.getTitle())) {
