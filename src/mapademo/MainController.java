@@ -84,6 +84,14 @@ public class MainController implements Initializable {
     
     private boolean showingChart = false;
     private MapProjection projection;
+    private java.util.Set<Annotation> deletedAnnotations = new java.util.HashSet<>();
+    private boolean waitingForLineEnd = false;
+    private GeoPoint pendingLineStart = null;
+    private Activity pendingActivity = null;
+    private javafx.scene.shape.Polyline tempLine = null;
+    private boolean waitingForCircleEnd = false;
+    private GeoPoint pendingCircleCenter = null;
+    private javafx.scene.shape.Circle tempCircle = null;
     /**
      * Initializes the controller class.
      */
@@ -178,19 +186,81 @@ public class MainController implements Initializable {
 
         elevationPane.getChildren().add(routeLine);
         for (Annotation ann : activity.getAnnotations()) {
+            if (deletedAnnotations.contains(ann)) continue; 
+            
             if (!ann.getGeoPoints().isEmpty()) {
                 GeoPoint gp = ann.getGeoPoints().get(0);
                 Point2D pixelLocation = projection.project(gp);
 
-                javafx.scene.shape.Circle markerDot = new javafx.scene.shape.Circle(pixelLocation.getX(), pixelLocation.getY(), 5.0);
-                markerDot.setFill(javafx.scene.paint.Color.web(ann.getColor()));
+                if (pixelLocation != null) {
+                    double px = pixelLocation.getX();
+                    double py = pixelLocation.getY();
+                    javafx.scene.paint.Color color = javafx.scene.paint.Color.web(ann.getColor());
+                    
+                    javafx.scene.Node shape;
+                    
+                    if (ann.getType() == AnnotationType.CIRCLE) {
+                        if (ann.getGeoPoints().size() > 1) { 
+                            Point2D centerPixel = projection.project(ann.getGeoPoints().get(0));
+                            Point2D edgePixel = projection.project(ann.getGeoPoints().get(1));
 
-                Label markerLabel = new Label(ann.getText());
-                markerLabel.setLayoutX(pixelLocation.getX() + 8);
-                markerLabel.setLayoutY(pixelLocation.getY() - 10);
-                markerLabel.setStyle("-fx-background-color: white; -fx-padding: 2px; -fx-border-color: black; -fx-font-size: 10px;");
+                            if (centerPixel != null && edgePixel != null) {
+                                double dx = edgePixel.getX() - centerPixel.getX();
+                                double dy = edgePixel.getY() - centerPixel.getY();
+                                double radiusPixels = Math.sqrt(dx * dx + dy * dy);
 
-                elevationPane.getChildren().addAll(markerDot, markerLabel);
+                                javafx.scene.shape.Circle circle = new javafx.scene.shape.Circle(centerPixel.getX(), centerPixel.getY(), radiusPixels);
+                                circle.setStroke(color);
+                                circle.setStrokeWidth(ann.getStrokeWidth()); 
+                                circle.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                                shape = circle;
+                            } else {
+                                shape = new javafx.scene.shape.Circle(px, py, 15.0);
+                                ((javafx.scene.shape.Circle)shape).setStroke(color);
+                                ((javafx.scene.shape.Circle)shape).setFill(javafx.scene.paint.Color.TRANSPARENT);
+                            }
+                        } else {
+                            shape = new javafx.scene.shape.Circle(px, py, 15.0);
+                            ((javafx.scene.shape.Circle)shape).setStroke(color);
+                            ((javafx.scene.shape.Circle)shape).setFill(javafx.scene.paint.Color.TRANSPARENT);
+                        }
+                    } else if (ann.getType() == AnnotationType.LINE) {
+                        if (ann.getGeoPoints().size() > 1) { 
+                            GeoPoint endGp = ann.getGeoPoints().get(1);
+                            Point2D endPixel = projection.project(endGp);
+                            if (endPixel != null) {
+                                javafx.scene.shape.Line line = new javafx.scene.shape.Line(px, py, endPixel.getX(), endPixel.getY());
+                                line.setStroke(color);
+                                line.setStrokeWidth(4.0);
+                                shape = line;
+                            } else {
+                                shape = new javafx.scene.shape.Line(px - 10, py - 10, px + 10, py + 10);
+                                ((javafx.scene.shape.Line)shape).setStroke(color);
+                                ((javafx.scene.shape.Line)shape).setStrokeWidth(4.0);
+                            }
+                        } else {
+                            shape = new javafx.scene.shape.Line(px - 10, py - 10, px + 10, py + 10);
+                            ((javafx.scene.shape.Line)shape).setStroke(color);
+                            ((javafx.scene.shape.Line)shape).setStrokeWidth(4.0);
+                        }
+                    } else if (ann.getType() == AnnotationType.TEXT) {
+                        shape = new javafx.scene.shape.Circle(px, py, 1.0, javafx.scene.paint.Color.TRANSPARENT); 
+                    } else {
+                        shape = new javafx.scene.shape.Circle(px, py, 5.0, color);
+                    }
+
+                    Label markerLabel = new Label(ann.getText());
+                    markerLabel.setLayoutX(px + 8);
+                    markerLabel.setLayoutY(py - 10);
+                    
+                    if (ann.getType() == AnnotationType.TEXT) {
+                        markerLabel.setStyle("-fx-text-fill: " + ann.getColor() + "; -fx-font-weight: bold; -fx-font-size: 14px;");
+                    } else {
+                        markerLabel.setStyle("-fx-background-color: white; -fx-padding: 2px; -fx-border-color: black; -fx-font-size: 10px;");
+                    }
+
+                    elevationPane.getChildren().addAll(shape, markerLabel);
+                }
             }
         }
 
@@ -255,33 +325,255 @@ public class MainController implements Initializable {
     }
     @FXML
     private void handleMapClick(MouseEvent event) {
-        if (event.isSecondaryButtonDown()) { 
+        if ((waitingForLineEnd || waitingForCircleEnd) && event.getButton() == javafx.scene.input.MouseButton.PRIMARY) {
+            GeoPoint pendingEnd = projection.unproject(event.getX(), event.getY());
+            map_scrollpane.setCursor(javafx.scene.Cursor.DEFAULT);
+
+            if (waitingForLineEnd) {
+                waitingForLineEnd = false;
+                if (tempLine != null) {
+                    elevationPane.getChildren().remove(tempLine);
+                    tempLine = null;
+                }
+                showLineAnnotationDialog(pendingActivity, pendingLineStart, pendingEnd);
+            } 
+            else if (waitingForCircleEnd) {
+                waitingForCircleEnd = false;
+                if (tempCircle != null) {
+                    elevationPane.getChildren().remove(tempCircle);
+                    tempCircle = null;
+                }
+                showCircleAnnotationDialog(pendingActivity, pendingCircleCenter, pendingEnd);
+            }
+            return;
+        }
+
+        if (event.isSecondaryButtonDown()) {
+            if (waitingForLineEnd || waitingForCircleEnd) {
+                waitingForLineEnd = false;
+                waitingForCircleEnd = false;
+                map_scrollpane.setCursor(javafx.scene.Cursor.DEFAULT);
+                if (tempLine != null) { elevationPane.getChildren().remove(tempLine); tempLine = null; }
+                if (tempCircle != null) { elevationPane.getChildren().remove(tempCircle); tempCircle = null; }
+                return; 
+            }
+
             ActivityWrapper selectedWrapper = activityList.getSelectionModel().getSelectedItem();
             if (selectedWrapper == null || projection == null) return;
-            
+
             Activity currentActivity = selectedWrapper.getActivity();
+            GeoPoint geoPoint = projection.unproject(event.getX(), event.getY());
 
-            javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog("Dangerous Area");
-            dialog.setTitle("New Annotation");
-            dialog.setHeaderText("Create a map marker note");
-            dialog.setContentText("Enter annotation text:");
+            javafx.scene.control.ContextMenu contextMenu = new javafx.scene.control.ContextMenu();
+            javafx.scene.control.MenuItem ptItem = new javafx.scene.control.MenuItem("Point");
+            javafx.scene.control.MenuItem txtItem = new javafx.scene.control.MenuItem("Text");
+            javafx.scene.control.MenuItem lineItem = new javafx.scene.control.MenuItem("Line");
+            javafx.scene.control.MenuItem circleItem = new javafx.scene.control.MenuItem("Circle");
 
-            java.util.Optional<String> result = dialog.showAndWait();
-            if (result.isPresent() && !result.get().trim().isEmpty()) {
-                GeoPoint geoPoint = projection.unproject(event.getX(), event.getY());
+            javafx.event.EventHandler<javafx.event.ActionEvent> menuHandler = e -> {
+                javafx.scene.control.MenuItem source = (javafx.scene.control.MenuItem) e.getSource();
+                AnnotationType type = AnnotationType.valueOf(source.getText().toUpperCase());
 
-                Annotation newAnnotation = new Annotation(
-                    AnnotationType.POINT,
-                    result.get().trim(),
-                    "#E74C3C",
-                    3.0,
-                    java.util.List.of(geoPoint)
-                ); 
+                if (type == AnnotationType.LINE) {
+                    waitingForLineEnd = true;
+                    pendingLineStart = geoPoint;
+                    pendingActivity = currentActivity;
+                    map_scrollpane.setCursor(javafx.scene.Cursor.CROSSHAIR);
 
-                SportActivityApp.getInstance().addAnnotation(currentActivity, newAnnotation); 
-                displayActivityMap(currentActivity);
-                displayActivityAnnotations(currentActivity);
+                    javafx.geometry.Point2D startPixel = projection.project(geoPoint);
+                    tempLine = new javafx.scene.shape.Polyline(startPixel.getX(), startPixel.getY(), startPixel.getX(), startPixel.getY());
+                    tempLine.setStroke(javafx.scene.paint.Color.RED);
+                    tempLine.setStrokeWidth(2.0);
+                    tempLine.getStrokeDashArray().addAll(5d, 5d); 
+                    tempLine.setManaged(false);
+                    tempLine.setMouseTransparent(true); 
+
+                    elevationPane.getChildren().add(tempLine);
+                } 
+                else if (type == AnnotationType.CIRCLE) {
+                    waitingForCircleEnd = true;
+                    pendingCircleCenter = geoPoint;
+                    pendingActivity = currentActivity;
+                    map_scrollpane.setCursor(javafx.scene.Cursor.CROSSHAIR);
+
+                    javafx.geometry.Point2D startPixel = projection.project(geoPoint);
+                    tempCircle = new javafx.scene.shape.Circle(startPixel.getX(), startPixel.getY(), 0);
+                    tempCircle.setStroke(javafx.scene.paint.Color.RED);
+                    tempCircle.setStrokeWidth(2.0);
+                    tempCircle.getStrokeDashArray().addAll(5d, 5d);
+                    tempCircle.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    tempCircle.setManaged(false);
+                    tempCircle.setMouseTransparent(true);
+
+                    elevationPane.getChildren().add(tempCircle);
+                } 
+                else {
+                    showAnnotationDialog(currentActivity, geoPoint, type);
+                }
+            };
+
+            ptItem.setOnAction(menuHandler);
+            txtItem.setOnAction(menuHandler);
+            lineItem.setOnAction(menuHandler);
+            circleItem.setOnAction(menuHandler);
+
+            contextMenu.getItems().addAll(ptItem, txtItem, lineItem, circleItem);
+            contextMenu.show(elevationPane, event.getScreenX(), event.getScreenY());
+        }
+    }
+
+    private void showCircleAnnotationDialog(Activity activity, GeoPoint centerPoint, GeoPoint edgePoint) {
+        javafx.scene.control.Dialog<Annotation> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("New Annotation");
+        dialog.setHeaderText("Create a circle annotation");
+
+        javafx.scene.control.ButtonType saveButtonType = new javafx.scene.control.ButtonType("Save", javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, javafx.scene.control.ButtonType.CANCEL);
+
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(20, 50, 10, 10));
+
+        javafx.scene.control.TextField textNote = new javafx.scene.control.TextField();
+        textNote.setPromptText("Enter text");
+        javafx.scene.control.ColorPicker colorPicker = new javafx.scene.control.ColorPicker(javafx.scene.paint.Color.web("#E74C3C"));
+
+        grid.add(new Label("Text note:"), 0, 0);
+        grid.add(textNote, 1, 0);
+        grid.add(new Label("Color:"), 0, 1);
+        grid.add(colorPicker, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButtonType) {
+                javafx.scene.paint.Color c = colorPicker.getValue();
+                String hexColor = String.format("#%02X%02X%02X",
+                        (int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
+
+                java.util.List<GeoPoint> points = new java.util.ArrayList<>();
+                points.add(centerPoint);  
+                points.add(edgePoint);   
+
+                return new Annotation(AnnotationType.CIRCLE, textNote.getText().trim(), hexColor, 3.0, points);
             }
+            return null;
+        });
+
+        java.util.Optional<Annotation> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            SportActivityApp.getInstance().addAnnotation(activity, result.get()); 
+            displayActivityMap(activity);
+            displayActivityAnnotations(activity);
+        }
+    }
+    private void showAnnotationDialog(Activity activity, GeoPoint gp, AnnotationType type) {
+        javafx.scene.control.Dialog<Annotation> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("New Annotation");
+        dialog.setHeaderText("Create a " + type.name().toLowerCase() + " annotation");
+
+        javafx.scene.control.ButtonType saveButtonType = new javafx.scene.control.ButtonType("Save", javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, javafx.scene.control.ButtonType.CANCEL);
+
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(20, 50, 10, 10));
+
+        javafx.scene.control.TextField textNote = new javafx.scene.control.TextField();
+        textNote.setPromptText("Enter text");
+        javafx.scene.control.ColorPicker colorPicker = new javafx.scene.control.ColorPicker(javafx.scene.paint.Color.web("#E74C3C"));
+
+        grid.add(new Label("Text note:"), 0, 0);
+        grid.add(textNote, 1, 0);
+        grid.add(new Label("Color:"), 0, 1);
+        grid.add(colorPicker, 1, 1);
+
+        javafx.scene.control.TextField radiusField = new javafx.scene.control.TextField("15.0");
+
+        if (type == AnnotationType.CIRCLE) {
+            grid.add(new Label("Radius (px):"), 0, 2);
+            grid.add(radiusField, 1, 2);
+        }
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButtonType) {
+                javafx.scene.paint.Color c = colorPicker.getValue();
+                String hexColor = String.format("#%02X%02X%02X",
+                        (int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
+                        
+                double sizeOrRadius = 3.0;
+                java.util.List<GeoPoint> points = new java.util.ArrayList<>();
+                points.add(gp);
+
+                if (type == AnnotationType.CIRCLE) {
+                    try {
+                        sizeOrRadius = Double.parseDouble(radiusField.getText().trim().replace(",", "."));
+                    } catch (Exception e) {
+                        sizeOrRadius = 15.0; 
+                    }
+                }
+
+                return new Annotation(type, textNote.getText().trim(), hexColor, sizeOrRadius, points);
+            }
+            return null;
+        });
+
+        java.util.Optional<Annotation> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            SportActivityApp.getInstance().addAnnotation(activity, result.get()); 
+            displayActivityMap(activity);
+            displayActivityAnnotations(activity);
+        }
+    }
+
+    private void showLineAnnotationDialog(Activity activity, GeoPoint startPoint, GeoPoint endPoint) {
+        javafx.scene.control.Dialog<Annotation> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("New Annotation");
+        dialog.setHeaderText("Create a line annotation");
+
+        javafx.scene.control.ButtonType saveButtonType = new javafx.scene.control.ButtonType("Save", javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, javafx.scene.control.ButtonType.CANCEL);
+
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(20, 50, 10, 10));
+
+        javafx.scene.control.TextField textNote = new javafx.scene.control.TextField();
+        textNote.setPromptText("Enter text");
+        javafx.scene.control.ColorPicker colorPicker = new javafx.scene.control.ColorPicker(javafx.scene.paint.Color.web("#E74C3C"));
+
+        grid.add(new Label("Text note:"), 0, 0);
+        grid.add(textNote, 1, 0);
+        grid.add(new Label("Color:"), 0, 1);
+        grid.add(colorPicker, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButtonType) {
+                javafx.scene.paint.Color c = colorPicker.getValue();
+                String hexColor = String.format("#%02X%02X%02X",
+                        (int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
+                        
+                java.util.List<GeoPoint> points = new java.util.ArrayList<>();
+                points.add(startPoint);
+                points.add(endPoint); 
+
+                return new Annotation(AnnotationType.LINE, textNote.getText().trim(), hexColor, 3.0, points);
+            }
+            return null;
+        });
+
+        java.util.Optional<Annotation> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            SportActivityApp.getInstance().addAnnotation(activity, result.get()); 
+            displayActivityMap(activity);
+            displayActivityAnnotations(activity);
         }
     }
     @FXML
@@ -399,7 +691,7 @@ public class MainController implements Initializable {
             elevationChart.setVisible(false);
             elevationChart.setManaged(false);
             
-            splitPane.setDividerPositions(1.0); // Powrót do pełnej mapy
+            splitPane.setDividerPositions(1.0);
             showingChart = false;
         } else {
             elevationChart.setTitle("Speed Profile");
@@ -478,8 +770,25 @@ public class MainController implements Initializable {
 
     @FXML
     private void showPosition(MouseEvent event) {
+        Point2D exactMapPixel = elevationPane.sceneToLocal(event.getSceneX(), event.getSceneY());
+        if (exactMapPixel == null) return;
+
+        double mapX = exactMapPixel.getX();
+        double mapY = exactMapPixel.getY();
+
+        if (waitingForLineEnd && tempLine != null && tempLine.getPoints().size() == 4) {
+            tempLine.getPoints().set(2, mapX);
+            tempLine.getPoints().set(3, mapY);
+        }
+        else if (waitingForCircleEnd && tempCircle != null) {
+            double dx = mapX - tempCircle.getCenterX();
+            double dy = mapY - tempCircle.getCenterY();
+            double r = Math.sqrt(dx * dx + dy * dy); 
+            tempCircle.setRadius(r);
+        }
+
         if (projection != null && mousePosition != null) {
-            GeoPoint gp = projection.unproject(event.getX(), event.getY());
+            GeoPoint gp = projection.unproject(mapX, mapY);
             mousePosition.setText(String.format("GPS: Lat: %.5f, Lon: %.5f", gp.getLatitude(), gp.getLongitude()));
         } else if (mousePosition != null) {
             mousePosition.setText("");
@@ -492,17 +801,16 @@ public class MainController implements Initializable {
         if (selectedWrapper == null) return;
 
         Annotation annotationToRemove = selectedWrapper.getAnnotation();
-
-        SportActivityApp.getInstance().removeAnnotation(annotationToRemove);
-
-        annotationList.getItems().remove(selectedWrapper);
-
         ActivityWrapper trackWrapper = activityList.getSelectionModel().getSelectedItem();
+        
         if (trackWrapper != null) {
+            Activity activity = trackWrapper.getActivity();
+            SportActivityApp.getInstance().removeAnnotation(annotationToRemove);
+            deletedAnnotations.add(annotationToRemove);
+            annotationList.getItems().remove(selectedWrapper);
+
             displayActivityMap(trackWrapper.getActivity());
         }
-        
-        System.out.println("Annotation successfully removed from database, sidebar, and map grid canvas.");
     }
     @FXML
     private void handleAbout(ActionEvent event) {
@@ -544,7 +852,9 @@ public class MainController implements Initializable {
         annotationList.getItems().clear();
         
         for (Annotation ann : activity.getAnnotations()) {
-            annotationList.getItems().add(new AnnotationWrapper(ann));
+            if (!deletedAnnotations.contains(ann)) {
+                annotationList.getItems().add(new AnnotationWrapper(ann));
+            }
         }
     }
     class AnnotationWrapper {
