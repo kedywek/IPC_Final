@@ -12,9 +12,16 @@
             <file>file:/home/damian/coding/IPC/IPC_Final/src/resources/estilos.css</file>
             <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/WelcomeController.java</file>
             <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/EditView.fxml</file>
-            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/MainViewController.java</file>
-            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/EditController.java</file>
             <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/RegisterController.java</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/SessionHistoryView.fxml</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/MainController.java</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/AddMappView.fxml</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/AddMapController.java</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/CumulativeTotalsView.fxml</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/CumulativeTotalsController.java</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/FXMLDocument.fxml</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/AboutView.fxml</file>
+            <file>file:/home/damian/coding/IPC/IPC_Final/src/mapademo/AboutController.java</file>
         </group>
     </open-files>
 </project-private>

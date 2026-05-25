@@ -494,7 +494,23 @@ public class MainController implements Initializable {
         
         System.out.println("Annotation successfully removed from database, sidebar, and map grid canvas.");
     }
-    
+    @FXML
+    private void handleAbout(ActionEvent event) {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("AboutView.fxml"));
+            javafx.scene.Parent root = loader.load();
+            
+            javafx.stage.Stage aboutStage = new javafx.stage.Stage();
+            aboutStage.setTitle("About");
+            aboutStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            aboutStage.setResizable(false);
+            aboutStage.setScene(new javafx.scene.Scene(root));
+            
+            aboutStage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     class ActivityWrapper {
         private final Activity activity;
 
