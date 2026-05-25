@@ -39,7 +39,8 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <TextField fx:id="lblEmailError" promptText="user@domain.com" />
+      <TextField fx:id="txtEmail" promptText="user@domain.com" />
+      <Label fx:id="lblEmailError" styleClass="label-error" text="Invalid email" visible="false" />
       <Label layoutX="34.0" layoutY="88.0" text="Password:">
          <font>
             <Font name="System Bold" size="12.0" />

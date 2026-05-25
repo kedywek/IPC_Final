@@ -34,7 +34,7 @@ public class EditController implements Initializable {
     @FXML
     private TextField txtNickname;
     @FXML
-    private TextField lblEmailError;
+    private Label lblEmailError;
     @FXML
     private PasswordField txtPassword;
     @FXML
@@ -53,6 +53,8 @@ public class EditController implements Initializable {
     private Label lblDateError;
     @FXML
     private Label lblProfile;
+    @FXML
+    private TextField txtEmail;
     
     
     private String selectedAvatarPath = null;
@@ -66,7 +68,7 @@ public class EditController implements Initializable {
         
         if (currentUser != null) {
             txtNickname.setText(currentUser.getNickName()); 
-            lblEmailError.setText(currentUser.getEmail()); 
+            txtEmail.setText(currentUser.getEmail()); 
             dpBirt.setValue(currentUser.getBirthDate()); 
             
             selectedAvatarPath = currentUser.getAvatarPath(); 
@@ -106,16 +108,17 @@ public class EditController implements Initializable {
         User currentUser = SportActivityApp.getInstance().getCurrentUser();
         if (currentUser == null) return;
 
-        String email = lblEmailError.getText().trim();
+        String email = txtEmail.getText().trim();
         String password = txtPassword.getText();
         LocalDate birthDate = dpBirt.getValue();
 
         lblPassError.setVisible(false);
         lblDateError.setVisible(false);
+        lblEmailError.setVisible(false);
         boolean isValid = true;
 
         if (!User.checkEmail(email)) {
-            System.out.println("Invalid email format entered.");
+            lblEmailError.setVisible(true);
             isValid = false;
         }
 
